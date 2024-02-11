@@ -25,15 +25,17 @@
 <body>
 
 <div id="url-box">
-    <input type="text" id="url-input" value="{{unique_key}}" readonly>
+    <input type="text" id="url-input" readonly>
     <br><br>
     <button onclick="copyUrl()" id="copy-button">Copy URL</button>
 </div>
 
 <script>
+    document.getElementById("url-input").value = document.location.hostname + "/mycal/{{unique_key}}";
     function copyUrl() {
         /* Get the text field */
         var urlInput = document.getElementById("url-input");
+        urlInput.value = document.location.hostname + "/mycal/{{unique_key}}";
 
         /* Select the text field */
         urlInput.select();
@@ -41,6 +43,8 @@
 
         /* Copy the text inside the text field */
         document.execCommand("copy");
+
+        urlInput.value = document.location.hostname + "/mycal/{{unique_key}}";
 
         /* Alert the copied text */
         alert("URL copied to clipboard: " + urlInput.value);

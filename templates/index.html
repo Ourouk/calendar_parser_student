@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Form</title>
+    <meta charset="UTF-8">
+    <style>
+        /* CSS for input boxes */
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
+        }
+
+        /* CSS for Add URL button */
+        #addUrl {
+            margin-top: 10px;
+            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* CSS for Remove URL button */
+        #removeUrl {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* CSS for Submit button */
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Enter URLs</h2>
+    <form action="/submited_calendars" method="post" id="urlForm">
+        <div id="urlsContainer">
+            <div>
+                <input type="text" name="urls" placeholder="https://example.com/cal1.ics">
+            </div>
+            <div>
+                <input type="text" name="urls" placeholder="https://example.com/cal2.ics">
+            </div>
+        </div>
+
+        <button type="button" id="addUrl">Add URL</button>
+        <button type="button" id="removeUrl">Remove Last Entry</button><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        var count = 3; // Each URL field and label are two elements
+        document.getElementById("addUrl").addEventListener("click", function() {
+            var container = document.getElementById("urlsContainer");
+            var input = document.createElement("input");
+            input.type = "text";
+            input.id = "urls";
+            input.placeholder = "https://example.com/cal" + count + ".ics";
+
+            count++;
+            container.appendChild(input);
+            container.appendChild(document.createElement("br"));
+        });
+
+        document.getElementById("removeUrl").addEventListener("click", function() {
+            var container = document.getElementById("urlsContainer");
+            var inputs = container.querySelectorAll('input[type="text"]');
+            if (inputs.length > 2) {
+                container.removeChild(inputs[inputs.length - 1]);
+                container.removeChild(container.lastElementChild); // remove <br>
+                count--;
+            } else {
+                alert("You cannot remove further.");
+            }
+        });
+    </script>
+</body>
+</html>

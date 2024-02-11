@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Events</title>
+    <meta charset="UTF-8">
+    <style>
+        /* Improved contrast for better readability */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        th {
+            background-color: #0095ffbc;
+            color: white;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Submited Calendars</h2>
+    <h4>Select the events you want to merge</h4>
+    <form id="urlForm" action="/parsed_calendars" method="POST">
+        {% for calendar_key, calendar in calendars.items() %}
+        <table>
+            <tr>
+                <th>Select</th>
+                <th>Event Names from {{calendar_key}}</th>
+            </tr>
+            <!-- Loop through the Events -->
+                {% for event_key, event_value in calendar.items() %}
+                    <tr>
+                        <td><input type="checkbox" id="{{ event_key }}" name="selectedEvents" value="{{ calendar_key + '#' + event_key }}" class="styled-checkbox"><label for="{{ event_key }}"></label></td>
+                        <td>{{ event_value }}</td>
+                    </tr>
+                {% endfor %}
+        </table><br>
+        {% endfor %}
+        <button type="submit">Create my calendar</button>
+    </form>
+</body>
+</html>

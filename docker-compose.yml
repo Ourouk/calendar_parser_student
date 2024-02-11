@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  calendar-parser-student:
+    build: .
+    ports:
+      - "5000:5000"  # Adjust the port mapping as needed
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis  # Environment variable to connect to the Redis service
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - EXPIRATION_TIME_SECONDS=3600
+    networks:
+      - network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"  # Port mapping for Redis, adjust as needed
+    networks:
+      - network
+
+networks:
+  network:

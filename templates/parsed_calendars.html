@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #url-box {
+            width: 60%;
+            margin: 50px auto;
+            padding: 10px;
+            font-size: 18px;
+        }
+        #copy-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="url-box">
+    <input type="text" id="url-input" value="{{unique_key}}" readonly>
+    <br><br>
+    <button onclick="copyUrl()" id="copy-button">Copy URL</button>
+</div>
+
+<script>
+    function copyUrl() {
+        /* Get the text field */
+        var urlInput = document.getElementById("url-input");
+
+        /* Select the text field */
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+
+        /* Alert the copied text */
+        alert("URL copied to clipboard: " + urlInput.value);
+    }
+</script>
+
+</body>
+</html>

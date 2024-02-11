@@ -1,0 +1,6 @@
+requests
+redis
+ics
+Flask
+chardet
+gunicorn

@@ -4,3 +4,4 @@ ics
 Flask
 chardet
 gunicorn
+logging

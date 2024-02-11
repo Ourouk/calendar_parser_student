@@ -5,8 +5,8 @@ from flask import Flask ,render_template,request,send_file
 from io import BytesIO
 import json
 import uuid
-import chardet
 import os
+import logging
 
 app = Flask(__name__)
 
@@ -16,23 +16,6 @@ redis_port = int(os.environ.get('REDIS_PORT'))
 redis_db = int(os.environ.get('REDIS_DB'))
 expiration_time_for_calendars_in_seconds = os.environ.get('EXPIRATION_TIME_SECONDS')
 app.redis_client = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
-# else:
-#     try:
-#         with open('config.json') as f:
-#             config = json.load(f)
-
-#         # Access configuration settings
-#         redis_host = config['redis']['host']
-#         redis_port = config['redis']['port']
-#         redis_db = config['redis']['db']
-#         expiration_time_for_calendars_in_seconds = config['expiration_time_seconds']
-
-#         # Set up Redis connection
-#         app.redis_client = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
-#     except (FileNotFoundError, KeyError) as e:
-#         print("Error loading configuration:", e)
-#         # Handle the error accordingly, whether it's raising an exception, providing default values, or exiting the application.
-
 
 @app.route('/')
 def index():
@@ -81,16 +64,20 @@ def mycal(key):
     return send_file(BytesIO(file_data), as_attachment=True, download_name="mycal.ics", mimetype='text/calendar')
 
 def fetch_calendars(url):
+    exception_domain = "https://horaire-hepl.provincedeliege.be"
     if(app.redis_client.exists(url)):
-        detected_encoding =  app.redis_client.get(f"{url}_chardet").decode("utf-8")
-        return app.redis_client.get(url).decode(detected_encoding)
+        ics_text = app.redis_client.get(url).decode("utf-8")
+        logging.info(f"Fetched {url} from cache")
+        return ics_text
     else:
         response = requests.get(url)
-        encoding_info = chardet.detect(response.content)
-        detected_encoding = encoding_info['encoding']
-        app.redis_client.setex(url,expiration_time_for_calendars_in_seconds,response.content)
-        app.redis_client.setex(f"{url}_chardet",expiration_time_for_calendars_in_seconds,detected_encoding)
-        return (response.content.decode(detected_encoding))
+        logging.info(f"Fetched {url}")
+        if url.startswith(exception_domain):
+            response.encoding = "utf-8"
+        decoded_text = response.text
+        app.redis_client.setex(url,expiration_time_for_calendars_in_seconds,decoded_text)
+        logging.info(f"Fetched {url}")
+        return (decoded_text)
 
 def get_recurring_event_names(url):  # We consider that all event that have the same course name are courses
     c = Calendar(fetch_calendars(url))
@@ -119,8 +106,5 @@ def generate_ical_file(selectedEventsParsed):
         parsed_calendars.events.update(temp_calendar.events)
     return parsed_calendars.serialize()
 
-    return app
-
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True)
